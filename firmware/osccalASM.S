@@ -102,7 +102,11 @@ calibrateOscillatorASM:
 
   ldi   try, 128    ; calibration start value
   ldi   stp, 0      ; initial step width=0 for sync phase (first delay is discarded)
+#ifndef DISABLE_HUB_SUPPORT
+  ldi   i, 11       ; 11 iterations (1x sync, 7x binary search, 3x neighbourhood)
+#else
   ldi   i, 10       ; 10 iterations (1x sync, 7x binary search, 2x neighbourhood)
+#endif
 
 usbCOloop:
 
@@ -147,8 +151,8 @@ usbCOWaitLoop:
     sbic    USBIN, USBMINUS ;[2] 
     rjmp    usbCOWaitLoop   ;[3]
 
-/*
 
+#ifndef DISABLE_HUB_SUPPORT
     ; This section of code deals with traffic from other USB devices on the same hub on USB1.1 hubs.
     ; If this code is excluded, micronucleus may only work when it is connected to a dedicated USB port
     
@@ -171,8 +175,8 @@ usbCOWaitNoData2:
     rjmp    usbCOWaitNoData2
     rjmp    usbCOLoopNoCal
 #endif
+#endif
 
-*/
     
 usbCOnotdata:
 	sbrs	cnt16H, 7		;delay overflow?
